@@ -1,0 +1,1151 @@
+@prefix : <https://w3id.org/utt/def/> .
+@prefix sf: <http://www.opengis.net/ont/sf#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix utt: <https://w3id.org/utt/def/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix uttvoc: <https://w3id.org/utt/voc/> .
+@base <https://w3id.org/utt/def/> .
+
+<https://w3id.org/utt/def/> rdf:type owl:Ontology ;
+                             owl:versionIRI <https://w3id.org/utt/def/0.2> ;
+                             owl:versionInfo "0.2" ;
+                             dcterms:created "2026-01-13"^^xsd:date ;
+                             dcterms:modified "2026-06-22"^^xsd:date ;
+                             dcterms:creator "Faith Tangara" ;
+                             dcterms:description "An ontology for capturing, sharing, and reusing verification data from test trench excavations (proefsleuven) in the Netherlands."@en ;
+                             dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+                             dcterms:publisher "Faith Tangara" ;
+                             dcterms:title "Universal Test Trench (UTT) Ontology"@en ,
+                                           "Universele Proefsleuf (UTT) Ontologie"@nl ;
+                             rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> ;
+                             rdfs:seeAlso <https://data.gwsw.nl/> .
+
+#    Annotation properties
+#################################################################
+
+dcterms:created rdf:type owl:AnnotationProperty .
+dcterms:modified rdf:type owl:AnnotationProperty .
+dcterms:creator rdf:type owl:AnnotationProperty .
+dcterms:description rdf:type owl:AnnotationProperty .
+dcterms:license rdf:type owl:AnnotationProperty .
+dcterms:publisher rdf:type owl:AnnotationProperty .
+dcterms:title rdf:type owl:AnnotationProperty .
+dcterms:format rdf:type owl:AnnotationProperty .
+skos:definition rdf:type owl:AnnotationProperty .
+skos:inScheme rdf:type owl:AnnotationProperty .
+skos:prefLabel rdf:type owl:AnnotationProperty .
+skos:hasTopConcept rdf:type owl:AnnotationProperty .
+skos:topConceptOf rdf:type owl:AnnotationProperty .
+skos:closeMatch rdf:type owl:AnnotationProperty .
+skos:exactMatch rdf:type owl:AnnotationProperty .
+qudt:unit rdf:type owl:AnnotationProperty .
+
+#    Datatypes
+#################################################################
+
+xsd:date rdf:type rdfs:Datatype .
+xsd:dateTime rdf:type rdfs:Datatype .
+
+#    Object Properties
+#################################################################
+
+###  GeoSPARQL
+geo:hasGeometry rdf:type owl:ObjectProperty .
+
+###  PROV-O
+prov:wasAssociatedWith rdf:type owl:ObjectProperty .
+
+###  dcterms:format (reused from Dublin Core, replacing utt:bestandsFormaat)
+dcterms:format rdf:type owl:ObjectProperty ;
+               rdfs:domain utt:OndersteunendeData ;
+               rdfs:range utt:DataFormaat ;
+               rdfs:comment """Reused from Dublin Core Terms. Links a supporting data file 
+    to its format (e.g. point cloud, photo, PDF). Replaces utt:bestandsFormaat from v0.2 
+    following reviewer recommendation to reuse dcterms:format."""@en .
+
+###  utt:bevatWaarneming
+utt:bevatWaarneming rdf:type owl:ObjectProperty ;
+                    rdfs:domain utt:Mantelbuis ;
+                    rdfs:range utt:Waarneming ;
+                    rdfs:label "bevat waarneming"@nl ,
+                               "contains observation"@en ;
+                    rdfs:comment """Used to represent nested utilities, where a sleeve (mantelbuis) 
+    physically contains other cables or pipes observed inside it."""@en ;
+                    skos:definition """Waarneming van een kabel of leiding die binnen deze 
+    mantelbuis is waargenomen."""@nl ,
+                                    """Observation of a cable or pipe observed inside this 
+    sleeve."""@en .
+
+###  utt:diepteAangrijpingspunt
+utt:diepteAangrijpingspunt rdf:type owl:ObjectProperty ;
+                           rdfs:domain utt:WaargenomenPositie ;
+                           rdfs:range utt:DiepteAangrijpingspuntValue ;
+                           rdfs:label "depth reference point"@en ,
+                                      "diepte aangrijpingspunt"@nl ;
+                           rdfs:comment """The reference point on the utility from which depth 
+    is measured. Must be explicitly declared per measurement; depth values are only meaningful 
+    when the reference point is known (top, axis, bottom, BOB for sewer, etc.)."""@en ;
+                           skos:definition """Het punt op het object waarop de diepte is gemeten 
+    (bovenkant, hart, onderkant, BOB). Hergebruikt IMKL waardelijst via rdfs:seeAlso."""@nl ,
+                                           """The point on the utility where depth is measured 
+    (top, axis, bottom, invert). Mirrors the IMKL value list via rdfs:seeAlso."""@en .
+
+###  utt:doelVanSleuf
+utt:doelVanSleuf rdf:type owl:ObjectProperty ;
+                 rdfs:domain utt:Proefsleuf ;
+                 rdfs:range utt:SleufDoel ;
+                 rdfs:label "doel van sleuf"@nl ,
+                            "purpose of trench"@en ;
+                 rdfs:comment """Captures why the trench was excavated. The purpose drives the 
+    type and resolution of data that can be expected from the observation."""@en ;
+                 skos:definition """Reden waarom de proefsleuf is gegraven (KLIC verificatie, 
+    nieuwe aanleg, onderhoud, ontwerp onderzoek)."""@nl ,
+                                 """Reason the test trench was excavated (KLIC verification, 
+    new installation, maintenance, design investigation)."""@en .
+
+###  utt:feitelijkePositie
+utt:feitelijkePositie rdf:type owl:ObjectProperty ;
+                      rdfs:domain utt:PositieAfwijking ;
+                      rdfs:range utt:WaargenomenPositie ;
+                      rdfs:label "actual position"@en ,
+                                 "feitelijke positie"@nl ;
+                      rdfs:comment """One of two positions compared to derive a deviation. 
+    This refers to the field-observed position measured during verification."""@en ;
+                      skos:definition """De in het veld waargenomen positie waartegen de 
+    verwachte positie wordt vergeleken."""@nl ,
+                                      """The field-observed position against which the expected 
+    position is compared."""@en .
+
+###  utt:gebruiktMethode
+utt:gebruiktMethode rdf:type owl:ObjectProperty ;
+                    rdfs:domain utt:VerificatieActiviteit ;
+                    rdfs:range utt:Meetmethode ;
+                    rdfs:label "gebruikt methode"@nl ,
+                               "used method"@en ;
+                    rdfs:comment """Links the verification activity to the measurement method 
+    used. Meetmethode is the top concept of the UTT measurement methods SKOS vocabulary."""@en ;
+                    skos:definition "De meetmethode die is gebruikt."@nl ,
+                                    "The measurement method that was used."@en .
+
+###  utt:geverifieerdDoor
+utt:geverifieerdDoor rdf:type owl:ObjectProperty ;
+                     rdfs:domain utt:Proefsleuf ;
+                     rdfs:range utt:VerificatieActiviteit ;
+                     rdfs:label "geverifieerd door"@nl ,
+                                "verified by"@en ;
+                     rdfs:comment "Links a test trench to the verification activity that produced its data."@en ;
+                     skos:definition "De verificatie activiteit die deze proefsleuf heeft aangemaakt."@nl ,
+                                     "The verification activity that produced this test trench record."@en .
+
+###  utt:heeftAfwijking
+utt:heeftAfwijking rdf:type owl:ObjectProperty ;
+                   rdfs:domain utt:Waarneming ;
+                   rdfs:range utt:PositieAfwijking ;
+                   rdfs:label "has deviation"@en ,
+                              "heeft afwijking"@nl ;
+                   rdfs:comment """Links an observation to a deviation record. The deviation 
+    itself references both the registered position and the observed position from which it 
+    is derived."""@en ;
+                   skos:definition """Afwijking ten opzichte van de geregistreerde positie, 
+    afgeleid uit twee expliciete positie instanties."""@nl ,
+                                   """Deviation from the registered position, derived from two 
+    explicit position instances."""@en .
+
+###  utt:heeftGrondCondities
+utt:heeftGrondCondities rdf:type owl:ObjectProperty ;
+                        rdfs:domain utt:Proefsleuf ;
+                        rdfs:range utt:GrondCondities ;
+                        rdfs:label "has ground conditions"@en ,
+                                   "heeft grond condities"@nl ;
+                        rdfs:comment """Links a test trench to the observed ground conditions 
+    at the site (soil type, groundwater, compaction). This information is valuable for reuse 
+    by other stakeholders beyond the immediate excavation."""@en ;
+                        skos:definition """De waargenomen grondcondities ter plaatse van de 
+    proefsleuf."""@nl ,
+                                        """The observed ground conditions at the site of the 
+    test trench."""@en .
+
+###  utt:heeftKenmerken
+utt:heeftKenmerken rdf:type owl:ObjectProperty ;
+                   rdfs:domain utt:Waarneming ;
+                   rdfs:range utt:WaargenomenKenmerken ;
+                   rdfs:label "has characteristics"@en ,
+                              "heeft kenmerken"@nl ;
+                   rdfs:comment "Links an observation to its observed physical characteristics."@en ;
+                   skos:definition "Waargenomen fysieke kenmerken."@nl ,
+                                   "Observed physical characteristics."@en .
+
+###  utt:heeftNauwkeurigheid
+utt:heeftNauwkeurigheid rdf:type owl:ObjectProperty ;
+                        rdfs:domain utt:WaargenomenPositie ;
+                        rdfs:range utt:Nauwkeurigheid ;
+                        rdfs:label "has accuracy"@en ,
+                                   "heeft nauwkeurigheid"@nl ;
+                        rdfs:comment """Accuracy is a property of the measured position, not of 
+    the trench itself. Every observed position carries its own accuracy indicator."""@en ;
+                        skos:definition "Nauwkeurigheidsindicator voor deze positie."@nl ,
+                                        "Accuracy indicator for this position."@en .
+
+###  utt:heeftOndersteunendeData
+utt:heeftOndersteunendeData rdf:type owl:ObjectProperty ;
+                            rdfs:domain utt:Waarneming ;
+                            rdfs:range utt:OndersteunendeData ;
+                            rdfs:label "has supporting data"@en ,
+                                       "heeft ondersteunende data"@nl ;
+                            rdfs:comment "Links an observation to external supporting files such as photos, point clouds, or CAD drawings."@en ;
+                            skos:definition "Verwijzing naar ondersteunende databestanden."@nl ,
+                                            "Reference to supporting data files."@en .
+
+###  utt:heeftPositie
+utt:heeftPositie rdf:type owl:ObjectProperty ;
+                 rdfs:domain utt:Waarneming ;
+                 rdfs:range utt:WaargenomenPositie ;
+                 rdfs:label "has position"@en ,
+                            "heeft positie"@nl ;
+                 rdfs:comment "Links an observation to its field-verified position."@en ;
+                 skos:definition "De geverifieerde positie van deze waarneming."@nl ,
+                                 "The verified position of this observation."@en .
+
+###  utt:heeftStatus
+utt:heeftStatus rdf:type owl:ObjectProperty ;
+                rdfs:domain utt:Waarneming ;
+                rdfs:range utt:WaarnemingStatus ;
+                rdfs:label "has status"@en ,
+                           "heeft status"@nl ;
+                rdfs:comment """Captures whether the observed utility matched the expected KLIC 
+    registration, deviated from it, or could not be identified at all. Supports partial 
+    observations where the correspondence to a registered asset cannot be established with 
+    confidence."""@en ;
+                skos:definition """Status van de waarneming: verwacht, afwijkend, of onbekend 
+    (niet te identificeren)."""@nl ,
+                                """Status of the observation: expected, aberrant, or unknown 
+    (not identifiable)."""@en .
+
+###  utt:heeftWaarneming
+utt:heeftWaarneming rdf:type owl:ObjectProperty ;
+                    owl:inverseOf utt:waargenomenIn ;
+                    rdfs:domain utt:Proefsleuf ;
+                    rdfs:range utt:Waarneming ;
+                    rdfs:label "has observation"@en ,
+                               "heeft waarneming"@nl ;
+                    rdfs:comment "Links a trench to the observations made within it."@en ;
+                    skos:definition "Waarnemingen gedaan in deze proefsleuf."@nl ,
+                                    "Observations made in this test trench."@en .
+
+###  utt:komtOvereenMet
+utt:komtOvereenMet rdf:type owl:ObjectProperty ;
+                   rdfs:domain utt:Waarneming ;
+                   rdfs:range utt:ImklKabelOfLeiding ;
+                   rdfs:label "corresponds to"@en ,
+                              "komt overeen met"@nl ;
+                   rdfs:comment """Links an observation to the registered asset in KLIC data 
+    when the correspondence can be established. The absence of this triple is meaningful and 
+    indicates an unregistered utility (orphan or weeslijding)."""@en ;
+                   skos:definition """Verwijzing naar het geregistreerde IMKL object indien 
+    identificeerbaar. Afwezigheid van deze relatie duidt op een niet-geregistreerde 
+    utiliteit."""@nl ,
+                                   """Reference to the registered IMKL object if identifiable. 
+    Absence of this relation indicates an unregistered utility."""@en .
+
+###  utt:nauwkeurigheidDiepteklasse
+utt:nauwkeurigheidDiepteklasse rdf:type owl:ObjectProperty ;
+                               rdfs:domain utt:Nauwkeurigheid ;
+                               rdfs:range utt:ImklNauwkeurigheidDiepteValue ;
+                               rdfs:label "accuracy depth class"@en ,
+                                          "nauwkeurigheid diepte klasse"@nl ;
+                               rdfs:comment "Mirrors the IMKL depth accuracy value list via rdfs:seeAlso."@en ;
+                               skos:definition "Nauwkeurigheidsklasse voor diepte. Hergebruikt IMKL waardelijst."@nl ,
+                                               "Accuracy class for depth. Mirrors the IMKL value list."@en .
+
+###  utt:nauwkeurigheidXYklasse
+utt:nauwkeurigheidXYklasse rdf:type owl:ObjectProperty ;
+                           rdfs:domain utt:Nauwkeurigheid ;
+                           rdfs:range utt:ImklNauwkeurigheidXYvalue ;
+                           rdfs:label "accuracy XY class"@en ,
+                                      "nauwkeurigheid XY klasse"@nl ;
+                           rdfs:comment "Mirrors the IMKL XY accuracy value list via rdfs:seeAlso."@en ;
+                           skos:definition "Nauwkeurigheidsklasse voor XY. Hergebruikt IMKL waardelijst."@nl ,
+                                           "Accuracy class for XY. Mirrors the IMKL value list."@en .
+
+###  utt:onderdeelVanProject
+utt:onderdeelVanProject rdf:type owl:ObjectProperty ;
+                        rdfs:domain utt:Proefsleuf ;
+                        rdfs:range utt:Project ;
+                        rdfs:label "onderdeel van project"@nl ,
+                                   "part of project"@en ;
+                        rdfs:comment "Groups multiple trenches under a single excavation job or project."@en ;
+                        skos:definition "Het project waartoe deze proefsleuf behoort."@nl ,
+                                        "The project that this test trench belongs to."@en .
+
+###  utt:opdrachtVan
+utt:opdrachtVan rdf:type owl:ObjectProperty ;
+                rdfs:domain utt:VerificatieActiviteit ;
+                rdfs:range utt:Aannemer ;
+                rdfs:label "commissioned by"@en ,
+                           "opdracht van"@nl ;
+                rdfs:comment "Links a verification activity to the contractor who commissioned it."@en ;
+                skos:definition "De aannemer die de verificatie heeft laten uitvoeren."@nl ,
+                                "The contractor who commissioned the verification."@en .
+
+###  utt:positieGeometrie
+utt:positieGeometrie rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf geo:hasGeometry ;
+                     rdfs:domain utt:WaargenomenPositie ;
+                     rdfs:range geo:Geometry ;
+                     rdfs:label "positie geometrie"@nl ,
+                                "position geometry"@en ;
+                     rdfs:comment "3D point or line geometry of the observed position, expressed in RD New (EPSG:28992) or a declared coordinate system."@en ;
+                     skos:definition "3D punt of lijn geometrie van de waargenomen positie."@nl ,
+                                     "3D point or line geometry of the observed position."@en .
+
+###  utt:sleufGeometrie
+utt:sleufGeometrie rdf:type owl:ObjectProperty ;
+                   rdfs:subPropertyOf geo:hasGeometry ;
+                   rdfs:domain utt:Proefsleuf ;
+                   rdfs:range geo:Geometry ;
+                   rdfs:label "sleuf geometrie"@nl ,
+                              "trench geometry"@en ;
+                   rdfs:comment """The 3D geometry of the trench. Supports non-rectangular shapes, 
+    open sites, and access points, not only perpendicular rectangular trenches."""@en ;
+                   skos:definition "De 3D geometrie van de proefsleuf (contour, polygoon, of lijn)."@nl ,
+                                   "The 3D geometry of the test trench (contour, polygon, or line)."@en .
+
+###  utt:uitgevoerdDoor
+utt:uitgevoerdDoor rdf:type owl:ObjectProperty ;
+                   rdfs:subPropertyOf prov:wasAssociatedWith ;
+                   rdfs:domain utt:VerificatieActiviteit ;
+                   rdfs:range utt:Landmeter ;
+                   rdfs:label "performed by"@en ,
+                              "uitgevoerd door"@nl ;
+                   rdfs:comment "Links a verification activity to the surveyor or organisation that performed it."@en ;
+                   skos:definition "De landmeter of organisatie die de meting heeft uitgevoerd."@nl ,
+                                   "The surveyor or organisation that performed the measurement."@en .
+
+###  uttvoc:verwachtePositie
+uttvoc:verwachtePositie rdf:type owl:ObjectProperty ;
+                     rdfs:domain utt:PositieAfwijking ;
+                     rdfs:range utt:GeregistreerdePositie ;
+                     rdfs:label "expected position"@en ,
+                                "verwachte positie"@nl ;
+                     rdfs:comment """One of two positions compared to derive a deviation. 
+    This refers to the KLIC-registered expected position."""@en ;
+                     skos:definition """De geregistreerde verwachte positie volgens KLIC, 
+    waartegen de feitelijke positie wordt vergeleken."""@nl ,
+                                     """The KLIC-registered expected position against which the 
+    actual position is compared."""@en .
+
+###  utt:waargenomenIn
+utt:waargenomenIn rdf:type owl:ObjectProperty ;
+                  rdfs:domain utt:Waarneming ;
+                  rdfs:range utt:Proefsleuf ;
+                  rdfs:label "observed in"@en ,
+                             "waargenomen in"@nl ;
+                  rdfs:comment "Links an observation back to the trench in which it was made."@en ;
+                  skos:definition "De proefsleuf waarin deze waarneming is gedaan."@nl ,
+                                  "The test trench in which this observation was made."@en .
+
+###  utt:waargenomenMateriaal
+utt:waargenomenMateriaal rdf:type owl:ObjectProperty ;
+                         rdfs:domain utt:WaargenomenKenmerken ;
+                         rdfs:range utt:ImklPipeMaterialTypeValue ;
+                         rdfs:label "observed material"@en ,
+                                    "waargenomen materiaal"@nl ;
+                         rdfs:comment "Material type. Mirrors the IMKL PipeMaterialType value list via rdfs:seeAlso."@en ;
+                         skos:definition "Materiaaltype. Hergebruikt IMKL PipeMaterialType waardelijst."@nl ,
+                                         "Material type. Mirrors the IMKL PipeMaterialType value list."@en .
+
+###  utt:waargenomenType
+utt:waargenomenType rdf:type owl:ObjectProperty ;
+                    rdfs:domain utt:Waarneming ;
+                    rdfs:range utt:ImklThema ;
+                    rdfs:label "observed type"@en ,
+                               "waargenomen type"@nl ;
+                    rdfs:comment "Theme (type of utility) of the observed cable or pipe. Mirrors the IMKL Thema value list via rdfs:seeAlso."@en ;
+                    skos:definition """Het type nutsvoorziening (thema) van de waargenomen 
+    kabel of leiding. Gebruikt IMKL Thema waardelijst."""@nl ,
+                                    """The type of utility (theme) of the observed cable or 
+    pipe. Uses the IMKL Thema value list."""@en .
+
+#    Data properties
+#################################################################
+
+###  utt:actorNaam
+utt:actorNaam rdf:type owl:DatatypeProperty ;
+              rdfs:domain prov:Agent ;
+              rdfs:range xsd:string ;
+              rdfs:label "actor naam"@nl ,
+                         "actor name"@en ;
+              rdfs:comment "Name of the person or organisation acting in the verification process."@en ;
+              skos:definition "Naam van de persoon of organisatie."@nl ,
+                              "Name of the person or organisation."@en .
+
+###  utt:afwijkingRichting
+utt:afwijkingRichting rdf:type owl:DatatypeProperty ;
+                      rdfs:domain utt:PositieAfwijking ;
+                      rdfs:range xsd:decimal ;
+                      qudt:unit unit:DEG ;
+                      rdfs:label "afwijking richting"@nl ,
+                                 "deviation direction"@en ;
+                      rdfs:comment "Horizontal direction of the deviation in degrees (0-360, where 0 = north). Derived from the two referenced positions."@en ;
+                      skos:definition """Richting van de horizontale afwijking in graden 
+    (0-360, waar 0 = noord). Afgeleid van de twee gerefereerde posities."""@nl ,
+                                      """Direction of the horizontal deviation in degrees 
+    (0-360, where 0 = north). Derived from the two referenced positions."""@en .
+
+###  utt:bestandsReferentie
+utt:bestandsReferentie rdf:type owl:DatatypeProperty ;
+                       rdfs:domain utt:OndersteunendeData ;
+                       rdfs:range xsd:anyURI ;
+                       rdfs:label "bestands referentie"@nl ,
+                                  "file reference"@en ;
+                       rdfs:comment "URI reference to the external supporting data file."@en ;
+                       skos:definition "URI verwijzing naar het externe bestand."@nl ,
+                                       "URI reference to the external file."@en .
+
+###  utt:bodemType
+utt:bodemType rdf:type owl:DatatypeProperty ;
+              rdfs:domain utt:GrondCondities ;
+              rdfs:range xsd:string ;
+              rdfs:label "bodem type"@nl ,
+                         "soil type"@en ;
+              rdfs:comment "Observed soil type at the trench location (e.g. sand, clay, peat, mixed)."@en ;
+              skos:definition "Waargenomen bodemtype (bijv. zand, klei, veen, gemengd)."@nl ,
+                              "Observed soil type (e.g. sand, clay, peat, mixed)."@en .
+
+###  utt:compactheid
+utt:compactheid rdf:type owl:DatatypeProperty ;
+                rdfs:domain utt:GrondCondities ;
+                rdfs:range xsd:string ;
+                rdfs:label "compactheid"@nl ,
+                           "compaction"@en ;
+                rdfs:comment "Qualitative or quantitative description of soil compaction at the trench."@en ;
+                skos:definition "Kwalitatieve of kwantitatieve beschrijving van de grondverdichting."@nl ,
+                                "Qualitative or quantitative description of soil compaction."@en .
+
+###  utt:diepteNAP
+utt:diepteNAP rdf:type owl:DatatypeProperty ;
+              rdfs:domain utt:WaargenomenPositie ;
+              rdfs:range xsd:decimal ;
+              qudt:unit unit:M ;
+              rdfs:label "depth NAP"@en ,
+                         "diepte NAP"@nl ;
+              rdfs:comment """Elevation of the utility reference point relative to NAP (Normaal 
+    Amsterdams Peil), in meters. Storing elevation relative to NAP rather than to a local 
+    ground surface ensures values remain valid if surface levels change over time."""@en ;
+              skos:definition """Hoogte van het aangrijpingspunt van de kabel/leiding ten 
+    opzichte van NAP, in meters. Bron van waarheid voor diepte."""@nl ,
+                              """Elevation of the utility reference point relative to NAP, in 
+    meters. Source of truth for depth."""@en .
+
+###  utt:diepteTovMaaiveld
+utt:diepteTovMaaiveld rdf:type owl:DatatypeProperty ;
+                      rdfs:domain utt:WaargenomenPositie ;
+                      rdfs:range xsd:decimal ;
+                      qudt:unit unit:M ;
+                      rdfs:label "depth relative to ground level"@en ,
+                                 "diepte t.o.v. maaiveld"@nl ;
+                      rdfs:comment """Depth of the utility reference point relative to the local 
+    ground surface, in meters. This value is a derived convenience; it can shift if the ground 
+    surface changes. The authoritative depth is diepteNAP."""@en ;
+                      skos:definition """Diepte van het aangrijpingspunt van de kabel/leiding 
+    ten opzichte van het lokale maaiveld, in meters. Afgeleid; kan wijzigen bij 
+    maaiveldverandering."""@nl ,
+                                      """Depth of the utility reference point relative to the 
+    local ground surface, in meters. Derived; may shift if the ground surface changes."""@en .
+
+###  utt:grondwaterNiveau
+utt:grondwaterNiveau rdf:type owl:DatatypeProperty ;
+                     rdfs:domain utt:GrondCondities ;
+                     rdfs:range xsd:decimal ;
+                     qudt:unit unit:M ;
+                     rdfs:label "grondwater niveau"@nl ,
+                                "groundwater level"@en ;
+                     rdfs:comment "Observed groundwater level at the trench, expressed as elevation relative to NAP in meters."@en ;
+                     skos:definition "Waargenomen grondwaterstand t.o.v. NAP in meters."@nl ,
+                                     "Observed groundwater level relative to NAP in meters."@en .
+
+###  utt:horizontaleAfwijking
+utt:horizontaleAfwijking rdf:type owl:DatatypeProperty ;
+                         rdfs:domain utt:PositieAfwijking ;
+                         rdfs:range xsd:decimal ;
+                         qudt:unit unit:M ;
+                         rdfs:label "horizontal deviation"@en ,
+                                    "horizontale afwijking"@nl ;
+                         rdfs:comment """Horizontal (XY) deviation in meters, derived from the 
+    two referenced positions (expected versus actual). May be cached as a computed value for 
+    query efficiency."""@en ;
+                         skos:definition """Horizontale (XY) afwijking in meters, afgeleid van 
+    de verwachte en feitelijke positie."""@nl ,
+                                         """Horizontal (XY) deviation in meters, derived from 
+    the expected and actual positions."""@en .
+
+###  utt:horizontaleOnzekerheid
+utt:horizontaleOnzekerheid rdf:type owl:DatatypeProperty ;
+                           rdfs:domain utt:Nauwkeurigheid ;
+                           rdfs:range xsd:decimal ;
+                           qudt:unit unit:M ;
+                           rdfs:label "horizontal uncertainty"@en ,
+                                      "horizontale onzekerheid"@nl ;
+                           rdfs:comment "Horizontal (XY) measurement uncertainty in meters (1 sigma)."@en ;
+                           skos:definition "Horizontale (XY) onzekerheid in meters (1 sigma)."@nl ,
+                                           "Horizontal (XY) uncertainty in meters (1 sigma)."@en .
+
+###  utt:klicObjectId
+utt:klicObjectId rdf:type owl:DatatypeProperty ;
+                 rdfs:domain utt:ImklKabelOfLeiding ;
+                 rdfs:range xsd:string ;
+                 rdfs:label "KLIC object ID"@en ,
+                            "KLIC object ID"@nl ;
+                 rdfs:comment """Persistent identifier for a registered utility object, stable 
+    across multiple KLIC meldingen. Enables multiple trench observations over time to reference 
+    the same physical utility asset."""@en ;
+                 skos:definition """Persistente identifier van een geregistreerde kabel of 
+    leiding, stabiel over meerdere KLIC meldingen heen."""@nl ,
+                                 """Persistent identifier of a registered cable or pipe, stable 
+    across multiple KLIC meldingen."""@en .
+
+###  utt:maaiveldElevatieNAP
+utt:maaiveldElevatieNAP rdf:type owl:DatatypeProperty ;
+                        rdfs:domain utt:Proefsleuf ;
+                        rdfs:range xsd:decimal ;
+                        qudt:unit unit:M ;
+                        rdfs:label "ground surface elevation NAP"@en ,
+                                   "maaiveld elevatie NAP"@nl ;
+                        rdfs:comment """Elevation of the ground surface at the trench, relative 
+    to NAP in meters. Recorded alongside utility elevation so depth-of-cover remains 
+    re-computable if surface levels change between visits."""@en ;
+                        skos:definition """Hoogte van het maaiveld ter plaatse van de proefsleuf 
+    t.o.v. NAP in meters."""@nl ,
+                                        """Ground surface elevation at the trench relative to 
+    NAP in meters."""@en .
+
+###  utt:projectNaam
+utt:projectNaam rdf:type owl:DatatypeProperty ;
+                rdfs:domain utt:Project ;
+                rdfs:range xsd:string ;
+                rdfs:label "project naam"@nl ,
+                           "project name"@en ;
+                rdfs:comment "Name of the excavation project."@en ;
+                skos:definition "Naam van het project."@nl ,
+                                "Name of the project."@en .
+
+###  utt:projectNummer
+utt:projectNummer rdf:type owl:DatatypeProperty ;
+                  rdfs:domain utt:Project ;
+                  rdfs:range xsd:string ;
+                  rdfs:label "project number"@en ,
+                             "project nummer"@nl ;
+                  rdfs:comment "Identifier of the excavation project."@en ;
+                  skos:definition "Nummer/identificatie van het project."@nl ,
+                                  "Number/identifier of the project."@en .
+
+###  utt:sleufBreedte
+utt:sleufBreedte rdf:type owl:DatatypeProperty ;
+                 rdfs:domain utt:Proefsleuf ;
+                 rdfs:range xsd:decimal ;
+                 qudt:unit unit:M ;
+                 rdfs:label "sleuf breedte"@nl ,
+                            "trench width"@en ;
+                 rdfs:comment "Width of the test trench in meters."@en ;
+                 skos:definition "Breedte van de proefsleuf in meters."@nl ,
+                                 "Width of the test trench in meters."@en .
+
+###  utt:sleufDiepte
+utt:sleufDiepte rdf:type owl:DatatypeProperty ;
+                rdfs:domain utt:Proefsleuf ;
+                rdfs:range xsd:decimal ;
+                qudt:unit unit:M ;
+                rdfs:label "sleuf diepte"@nl ,
+                           "trench excavated depth"@en ;
+                rdfs:comment """Maximum excavated depth of the trench itself, in meters. 
+    Distinct from the depth to any observed utility. Important for understanding what the 
+    excavation did and did not cover."""@en ;
+                skos:definition """Maximale uitgegraven diepte van de proefsleuf in meters, 
+    onafhankelijk van de diepte van waargenomen utiliteiten."""@nl ,
+                                """Maximum excavated depth of the trench in meters, independent 
+    of the depth of any observed utility."""@en .
+
+###  utt:sleufLengte
+utt:sleufLengte rdf:type owl:DatatypeProperty ;
+                rdfs:domain utt:Proefsleuf ;
+                rdfs:range xsd:decimal ;
+                qudt:unit unit:M ;
+                rdfs:label "sleuf lengte"@nl ,
+                           "trench length"@en ;
+                rdfs:comment "Length of the test trench in meters."@en ;
+                skos:definition "Lengte van de proefsleuf in meters."@nl ,
+                                "Length of the test trench in meters."@en .
+
+###  utt:verificatieDatum
+utt:verificatieDatum rdf:type owl:DatatypeProperty ;
+                     rdfs:domain utt:VerificatieActiviteit ;
+                     rdfs:range xsd:dateTime ;
+                     rdfs:label "verificatie datum"@nl ,
+                                "verification date"@en ;
+                     rdfs:comment "Date and time the verification was performed."@en ;
+                     skos:definition "Datum en tijd waarop de verificatie is uitgevoerd."@nl ,
+                                     "Date and time the verification was performed."@en .
+
+###  utt:waargenomenDiameter
+utt:waargenomenDiameter rdf:type owl:DatatypeProperty ;
+                        rdfs:domain utt:WaargenomenKenmerken ;
+                        rdfs:range xsd:decimal ;
+                        qudt:unit unit:MilliM ;
+                        rdfs:label "observed diameter"@en ,
+                                   "waargenomen diameter"@nl ;
+                        rdfs:comment "Outer diameter of the cable or pipe in millimeters."@en ;
+                        skos:definition "Buitendiameter van de kabel of leiding in millimeters."@nl ,
+                                        "Outer diameter of the cable or pipe in millimeters."@en .
+
+###  utt:waargenomenKleur
+utt:waargenomenKleur rdf:type owl:DatatypeProperty ;
+                     rdfs:domain utt:WaargenomenKenmerken ;
+                     rdfs:range xsd:string ;
+                     rdfs:label "observed color"@en ,
+                                "waargenomen kleur"@nl ;
+                     rdfs:comment """Colour of the cable, pipe, or marking as observed in the 
+    field. Subjective by nature; interpretation should account for lighting and soil staining."""@en ;
+                     skos:definition """Kleur van de kabel, leiding of markering zoals 
+    waargenomen in het veld. Subjectief van aard."""@nl ,
+                                     """Colour of the cable, pipe or marking as observed in the 
+    field. Subjective by nature."""@en .
+
+#    Classes
+#################################################################
+
+geo:Feature rdf:type owl:Class .
+geo:Geometry rdf:type owl:Class .
+skos:Concept rdf:type owl:Class .
+skos:ConceptScheme rdf:type owl:Class .
+prov:Activity rdf:type owl:Class .
+prov:Agent rdf:type owl:Class .
+prov:Entity rdf:type owl:Class .
+
+###  IMKL reference stubs (empty local definitions, linked to IMKL documentation via rdfs:seeAlso)
+
+###  utt:ImklDiepteAangrijpingspuntValue
+utt:ImklDiepteAangrijpingspuntValue rdf:type owl:Class ;
+                                    rdfs:label "IMKL Diepte Aangrijpingspunt Value"@en ,
+                                               "IMKL Diepte Aangrijpingspunt Value"@nl ;
+                                    rdfs:comment "Stub for IMKL depth reference point value list. See IMKL documentation for authoritative definitions."@en ;
+                                    rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:ImklKabelOfLeiding
+utt:ImklKabelOfLeiding rdf:type owl:Class ;
+                       rdfs:label "IMKL Cable or Pipe"@en ,
+                                  "IMKL Kabel of Leiding"@nl ;
+                       rdfs:comment "Stub for the IMKL registered utility class. See IMKL documentation for authoritative definition."@en ;
+                       rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:ImklNauwkeurigheidDiepteValue
+utt:ImklNauwkeurigheidDiepteValue rdf:type owl:Class ;
+                                  rdfs:label "IMKL Depth Accuracy Value"@en ,
+                                             "IMKL Nauwkeurigheid Diepte Value"@nl ;
+                                  rdfs:comment "Stub for IMKL depth accuracy value list. See IMKL documentation for authoritative definitions."@en ;
+                                  rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:ImklNauwkeurigheidXYvalue
+utt:ImklNauwkeurigheidXYvalue rdf:type owl:Class ;
+                              rdfs:label "IMKL XY Accuracy Value"@en ,
+                                         "IMKL Nauwkeurigheid XY Value"@nl ;
+                              rdfs:comment "Stub for IMKL XY accuracy value list. See IMKL documentation for authoritative definitions."@en ;
+                              rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:ImklPipeMaterialTypeValue
+utt:ImklPipeMaterialTypeValue rdf:type owl:Class ;
+                              rdfs:label "IMKL Pipe Material Type Value"@en ,
+                                         "IMKL Pipe Material Type Value"@nl ;
+                              rdfs:comment "Stub for IMKL pipe material type value list. See IMKL documentation for authoritative definitions."@en ;
+                              rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:ImklThema
+utt:ImklThema rdf:type owl:Class ;
+              rdfs:label "IMKL Theme"@en ,
+                         "IMKL Thema"@nl ;
+              rdfs:comment "Stub for the IMKL utility theme class (e.g. gas, water, telecom). See IMKL documentation for authoritative definition."@en ;
+              rdfs:seeAlso <https://docs.geostandaarden.nl/kl/imkl/> .
+
+###  utt:Aannemer
+utt:Aannemer rdf:type owl:Class ;
+             rdfs:subClassOf prov:Agent ;
+             rdfs:label "Aannemer"@nl ,
+                        "Contractor"@en ;
+             rdfs:comment "Contractor organisation responsible for the excavation work."@en ;
+             skos:definition "Organisatie verantwoordelijk voor de graafwerkzaamheden."@nl ,
+                             "Organisation responsible for the excavation work."@en .
+
+###  utt:DataFormaat
+utt:DataFormaat rdf:type owl:Class ;
+                rdfs:subClassOf skos:Concept ;
+                rdfs:label "Data Formaat"@nl ,
+                           "Data Format"@en ;
+                rdfs:comment "Top concept of the UTT data format SKOS vocabulary."@en ;
+                skos:definition "Formaat van ondersteunend data bestand."@nl ,
+                                "Format of a supporting data file."@en .
+
+###  utt:DiepteAangrijpingspuntValue
+utt:DiepteAangrijpingspuntValue rdf:type owl:Class ;
+                                rdfs:subClassOf skos:Concept ;
+                                rdfs:label "Depth Reference Point Value"@en ,
+                                           "Diepte Aangrijpingspunt Value"@nl ;
+                                rdfs:comment """Depth reference point dictionary. Required 
+    per measurement so depth values are interpretable (top of utility, axis, bottom, BOB for 
+    sewer). Mirrors the IMKL depth reference point list."""@en ;
+                                skos:definition """Aangrijpingspunt waarop diepte is gemeten, 
+    per meting expliciet gedeclareerd."""@nl ,
+                                                """Reference point at which depth is measured, 
+    explicitly declared per measurement."""@en ;
+                                rdfs:seeAlso utt:ImklDiepteAangrijpingspuntValue .
+
+###  utt:GeregistreerdePositie
+utt:GeregistreerdePositie rdf:type owl:Class ;
+                          rdfs:label "Geregistreerde Positie"@nl ,
+                                     "Registered Position"@en ;
+                          rdfs:comment """The expected position of a utility as recorded in KLIC 
+    registration data. Modelled as a first-class entity so deviations can be derived from an 
+    explicit pair of positions (registered versus observed) rather than stored as a standalone 
+    value."""@en ;
+                          skos:definition """De verwachte positie van een kabel of leiding 
+    volgens de KLIC registratie."""@nl ,
+                                          """The expected position of a cable or pipe according 
+    to the KLIC registration."""@en .
+
+###  utt:GrondCondities
+utt:GrondCondities rdf:type owl:Class ;
+                   rdfs:label "Grond Condities"@nl ,
+                              "Ground Conditions"@en ;
+                   rdfs:comment """Captures ground condition information at the trench: soil 
+    type, groundwater level, compaction. Relevant to stakeholders beyond the immediate 
+    excavation because these conditions affect future works at the same location."""@en ;
+                   skos:definition """Grondcondities ter plaatse van de proefsleuf (bodemtype, 
+    grondwaterstand, compactheid)."""@nl ,
+                                   """Ground conditions at the trench site (soil type, 
+    groundwater level, compaction)."""@en .
+
+###  utt:Landmeter
+utt:Landmeter rdf:type owl:Class ;
+              rdfs:subClassOf prov:Agent ;
+              rdfs:label "Landmeter"@nl ,
+                         "Surveyor"@en ;
+              rdfs:comment "Person or organisation performing the field measurements."@en ;
+              skos:definition "Persoon of organisatie die de metingen uitvoert."@nl ,
+                              "Person or organisation performing the measurements."@en .
+
+###  utt:Mantelbuis
+utt:Mantelbuis rdf:type owl:Class ;
+               rdfs:subClassOf utt:Waarneming ;
+               rdfs:label "Mantelbuis"@nl ,
+                          "Sleeve"@en ;
+               rdfs:comment """A sleeve or mantel tube observed in a trench, which physically 
+    contains other cables or pipes. Modelled as a subclass of Waarneming so nested utilities 
+    can be represented via bevatWaarneming."""@en ;
+               skos:definition """Mantelbuis die andere kabels of leidingen omhult, geobserveerd 
+    in een proefsleuf."""@nl ,
+                               """A sleeve or mantel tube enclosing other cables or pipes, 
+    observed in a trench."""@en .
+
+###  utt:Meetmethode
+utt:Meetmethode rdf:type owl:Class ;
+                rdfs:subClassOf skos:Concept ;
+                rdfs:label "Measurement Method"@en ,
+                           "Meetmethode"@nl ;
+                rdfs:comment "Top concept of the UTT measurement methods SKOS vocabulary."@en ;
+                skos:definition "Techniek gebruikt voor positiebepaling."@nl ,
+                                "Technique used for position determination."@en .
+
+###  utt:Nauwkeurigheid
+utt:Nauwkeurigheid rdf:type owl:Class ;
+                   rdfs:label "Accuracy"@en ,
+                              "Nauwkeurigheid"@nl ;
+                   rdfs:comment """Measurement accuracy indicator. Attached to the observed 
+    position rather than to the trench, because accuracy is a property of the measurement, not 
+    of the excavation."""@en ;
+                   skos:definition """Kwantitatieve onzekerheid van de gemeten positie 
+    (horizontaal en verticaal)."""@nl ,
+                                   """Quantitative uncertainty of the measured position 
+    (horizontal and vertical)."""@en .
+
+###  utt:NauwkeurigheidDiepteValue
+utt:NauwkeurigheidDiepteValue rdf:type owl:Class ;
+                              rdfs:subClassOf skos:Concept ;
+                              rdfs:label "Depth Accuracy Value"@en ,
+                                         "Nauwkeurigheid Diepte Value"@nl ;
+                              rdfs:comment "Depth accuracy classification. Mirrors the IMKL depth accuracy value list."@en ;
+                              skos:definition "Nauwkeurigheidsklasse voor dieptemeting."@nl ,
+                                              "Accuracy class for depth measurement."@en ;
+                              rdfs:seeAlso utt:ImklNauwkeurigheidDiepteValue .
+
+###  utt:NauwkeurigheidXYvalue
+utt:NauwkeurigheidXYvalue rdf:type owl:Class ;
+                          rdfs:subClassOf skos:Concept ;
+                          rdfs:label "XY Accuracy Value"@en ,
+                                     "Nauwkeurigheid XY Value"@nl ;
+                          rdfs:comment "XY accuracy classification. Mirrors the IMKL XY accuracy value list."@en ;
+                          skos:definition "Nauwkeurigheidsklasse voor XY meting."@nl ,
+                                          "Accuracy class for XY measurement."@en ;
+                          rdfs:seeAlso utt:ImklNauwkeurigheidXYvalue .
+
+###  utt:OndersteunendeData
+utt:OndersteunendeData rdf:type owl:Class ;
+                       rdfs:subClassOf prov:Entity ;
+                       rdfs:label "Ondersteunende Data"@nl ,
+                                  "Supporting Data"@en ;
+                       rdfs:comment "External supporting data such as point clouds, photos, CAD drawings, or reports."@en ;
+                       skos:definition """Verwijzing naar externe databestanden zoals 
+    puntenwolken, foto's, of rapporten."""@nl ,
+                                       """Reference to external data files such as point clouds, 
+    photos, or reports."""@en .
+
+###  utt:PositieAfwijking
+utt:PositieAfwijking rdf:type owl:Class ;
+                     rdfs:label "Positie Afwijking"@nl ,
+                                "Position Deviation"@en ;
+                     rdfs:comment """The deviation between the KLIC-registered expected 
+    position and the field-observed actual position. Modelled as a derived record linking 
+    two explicit position instances (verwachtePositie, feitelijkePositie) rather than storing 
+    deviation values independently."""@en ;
+                     skos:definition """Afgeleide afwijking tussen de geregistreerde verwachte 
+    positie en de in het veld waargenomen feitelijke positie."""@nl ,
+                                     """Derived deviation between the KLIC-registered expected 
+    position and the field-observed actual position."""@en .
+
+###  utt:Proefsleuf
+utt:Proefsleuf rdf:type owl:Class ;
+               rdfs:subClassOf geo:Feature ;
+               rdfs:label "Proefsleuf"@nl ,
+                          "Test Trench"@en ;
+               rdfs:comment """Central class of UTT. Links to observations, verification 
+    activities, ground conditions, trench geometry, surface elevation, and purpose of 
+    excavation."""@en ;
+               skos:definition """A physical excavation made to verify the location, depth 
+    and condition of underground cables and pipes."""@en ,
+                               """Een fysieke uitgraving gemaakt om de locatie, diepte en 
+    conditie van ondergrondse kabels en leidingen te verifiëren."""@nl .
+
+###  utt:Project
+utt:Project rdf:type owl:Class ;
+            rdfs:label "Project"@en ,
+                       "Project"@nl ;
+            rdfs:comment "The excavation project under which one or more test trenches are dug."@en ;
+            skos:definition "Het bouwproject waarbinnen de proefsleuf is gegraven."@nl ,
+                            "The construction project under which the test trench was excavated."@en .
+
+###  utt:SleufDoel
+utt:SleufDoel rdf:type owl:Class ;
+              rdfs:subClassOf skos:Concept ;
+              rdfs:label "Purpose of Trench"@en ,
+                         "Sleuf Doel"@nl ;
+              rdfs:comment "Top concept of the UTT trench purpose SKOS vocabulary."@en ;
+              skos:definition "Reden waarom een proefsleuf wordt gegraven."@nl ,
+                              "Reason the test trench was excavated."@en .
+
+###  utt:VerificatieActiviteit
+utt:VerificatieActiviteit rdf:type owl:Class ;
+                          rdfs:subClassOf prov:Activity ;
+                          rdfs:label "Verificatie Activiteit"@nl ,
+                                     "Verification Activity"@en ;
+                          rdfs:comment "The act of measuring and verifying the utilities observed in a trench on a specific date using a specific method."@en ;
+                          skos:definition """De handeling van meten en verifiëren van de 
+    waarnemingen in een proefsleuf, op een bepaalde datum en met een bepaalde methode."""@nl ,
+                                          """The act of measuring and verifying the observations 
+    in a trench, on a specific date and using a specific method."""@en .
+
+###  utt:WaargenomenKenmerken
+utt:WaargenomenKenmerken rdf:type owl:Class ;
+                         rdfs:label "Observed Characteristics"@en ,
+                                    "Waargenomen Kenmerken"@nl ;
+                         rdfs:comment "Physical characteristics of the cable or pipe as observed in the field (diameter, material, colour)."@en ;
+                         skos:definition """Fysieke eigenschappen van de kabel of leiding zoals 
+    waargenomen in het veld."""@nl ,
+                                         """Physical properties of the cable or pipe as observed 
+    in the field."""@en .
+
+###  utt:WaargenomenPositie
+utt:WaargenomenPositie rdf:type owl:Class ;
+                       rdfs:label "Observed Position"@en ,
+                                  "Waargenomen Positie"@nl ;
+                       rdfs:comment """The field-observed 3D position of a utility. Carries its 
+    own accuracy indicator and an explicit depth reference point. Paired with a 
+    GeregistreerdePositie to derive a PositieAfwijking."""@en ;
+                       skos:definition """De in het veld gemeten 3D positie van een kabel of 
+    leiding."""@nl ,
+                                       """The field-measured 3D position of a cable or pipe."""@en .
+
+###  utt:Waarneming
+utt:Waarneming rdf:type owl:Class ;
+               rdfs:subClassOf prov:Entity ;
+               rdfs:label "Observation"@en ,
+                          "Waarneming"@nl ;
+               rdfs:comment """A record of a cable or pipe observed in a test trench, including 
+    its verified position. Links to the registered asset via komtOvereenMet when identifiable. 
+    Absence of that link indicates an unregistered utility. The status property further 
+    classifies the observation as expected, aberrant, or unknown."""@en ;
+               skos:definition """A record of a cable or pipe observed in a test trench, 
+    including its verified position."""@en ,
+                               """Een registratie van een kabel of leiding die is 
+    waargenomen in een proefsleuf, inclusief geverifieerde positie."""@nl .
+
+###  utt:WaarnemingStatus
+utt:WaarnemingStatus rdf:type owl:Class ;
+                     rdfs:subClassOf skos:Concept ;
+                     rdfs:label "Observation Status"@en ,
+                                "Waarneming Status"@nl ;
+                     rdfs:comment "Top concept of the UTT observation status SKOS vocabulary."@en ;
+                     skos:definition """Status van een waarneming ten opzichte van de KLIC 
+    registratie: verwacht, afwijkend, of onbekend."""@nl ,
+                                     """Status of an observation with respect to KLIC 
+    registration: expected, aberrant, or unknown."""@en .
+
+#    Concept Schemes
+#################################################################
+
+###  uttvoc:DataFormaatScheme
+uttvoc:DataFormaatScheme rdf:type owl:NamedIndividual ,
+                               skos:ConceptScheme ;
+                      rdfs:label "UTT Data Format Vocabulary"@en ,
+                                 "UTT Data Formaat Waardelijst"@nl ;
+                      skos:hasTopConcept utt:DataFormaat .
+
+###  uttvoc:MeetmethodeScheme
+uttvoc:MeetmethodeScheme rdf:type owl:NamedIndividual ,
+                               skos:ConceptScheme ;
+                      rdfs:label "UTT Measurement Methods Vocabulary"@en ,
+                                 "UTT Meetmethode Waardelijst"@nl ;
+                      skos:hasTopConcept utt:Meetmethode .
+
+###  uttvoc:SleufDoelScheme
+uttvoc:SleufDoelScheme rdf:type owl:NamedIndividual ,
+                             skos:ConceptScheme ;
+                    rdfs:label "UTT Trench Purpose Vocabulary"@en ,
+                               "UTT Sleuf Doel Waardelijst"@nl ;
+                    skos:hasTopConcept utt:SleufDoel .
+
+###  uttvoc:WaarnemingStatusScheme
+uttvoc:WaarnemingStatusScheme rdf:type owl:NamedIndividual ,
+                                    skos:ConceptScheme ;
+                           rdfs:label "UTT Observation Status Vocabulary"@en ,
+                                      "UTT Waarneming Status Waardelijst"@nl ;
+                           skos:hasTopConcept utt:WaarnemingStatus .
+
+
+#    Individuals - Data Formats
+#################################################################
+
+###  uttvoc:cadTekening
+uttvoc:cadTekening rdf:type owl:NamedIndividual ,
+                         skos:Concept ,
+                         utt:DataFormaat ;
+                skos:definition "DWG, DXF formaat."@nl ,
+                                "DWG, DXF format."@en ;
+                skos:inScheme uttvoc:DataFormaatScheme ;
+                skos:prefLabel "CAD drawing"@en ,
+                               "CAD tekening"@nl .
+
+###  uttvoc:foto
+uttvoc:foto rdf:type owl:NamedIndividual ,
+                  skos:Concept ,
+                  utt:DataFormaat ;
+         skos:definition "JPEG, TIFF, PNG formaat."@nl ,
+                         "JPEG, TIFF, PNG format."@en ;
+         skos:inScheme uttvoc:DataFormaatScheme ;
+         skos:prefLabel "foto"@nl ,
+                        "photograph"@en ;
+         skos:closeMatch <http://vocab.getty.edu/aat/300046300> .
+
+###  uttvoc:gisBestand
+uttvoc:gisBestand rdf:type owl:NamedIndividual ,
+                        skos:Concept ,
+                        utt:DataFormaat ;
+               skos:definition "Shapefile, GeoJSON, GeoPackage formaat."@nl ,
+                               "Shapefile, GeoJSON, GeoPackage format."@en ;
+               skos:inScheme uttvoc:DataFormaatScheme ;
+               skos:prefLabel "GIS bestand"@nl ,
+                              "GIS file"@en .
+
+###  uttvoc:pdfRapport
+uttvoc:pdfRapport rdf:type owl:NamedIndividual ,
+                        skos:Concept ,
+                        utt:DataFormaat ;
+               skos:definition "PDF verificatierapport."@nl ,
+                               "PDF verification report."@en ;
+               skos:inScheme uttvoc:DataFormaatScheme ;
+               skos:prefLabel "PDF rapport"@nl ,
+                              "PDF report"@en .
+
+###  uttvoc:puntenwolk
+uttvoc:puntenwolk rdf:type owl:NamedIndividual ,
+                        skos:Concept ,
+                        utt:DataFormaat ;
+               skos:definition "LAS, LAZ, E57, PTX formaat."@nl ,
+                               "LAS, LAZ, E57, PTX format."@en ;
+               skos:inScheme uttvoc:DataFormaatScheme ;
+               skos:prefLabel "point cloud"@en ,
+                              "puntenwolk"@nl .
+
+#    Individuals - Measurement Methods
+#################################################################
+
+###  uttvoc:fotogrammetrie
+uttvoc:fotogrammetrie rdf:type owl:NamedIndividual ,
+                            skos:Concept ,
+                            utt:Meetmethode ;
+                   skos:definition "3D reconstructie uit foto's."@nl ,
+                                   "3D reconstruction from photographs."@en ;
+                   skos:inScheme uttvoc:MeetmethodeScheme ;
+                   skos:prefLabel "fotogrammetrie"@nl ,
+                                  "photogrammetry"@en ;
+                   skos:closeMatch <http://vocab.getty.edu/aat/300053097> .
+
+###  uttvoc:gecombineerd
+uttvoc:gecombineerd rdf:type owl:NamedIndividual ,
+                          skos:Concept ,
+                          utt:Meetmethode ;
+                 skos:definition "Meerdere technieken gecombineerd."@nl ,
+                                 "Multiple techniques combined."@en ;
+                 skos:inScheme uttvoc:MeetmethodeScheme ;
+                 skos:prefLabel "combined methods"@en ,
+                                "gecombineerde methode"@nl .
+
+###  uttvoc:gnssRtk
+uttvoc:gnssRtk rdf:type owl:NamedIndividual ,
+                     skos:Concept ,
+                     utt:Meetmethode ;
+            skos:definition "Satellietpositionering met RTK correcties."@nl ,
+                            "Satellite positioning with RTK corrections."@en ;
+            skos:inScheme uttvoc:MeetmethodeScheme ;
+            skos:prefLabel "GNSS/RTK"@nl ,
+                           "GNSS/RTK"@en .
+
+###  uttvoc:handmatig
+uttvoc:handmatig rdf:type owl:NamedIndividual ,
+                       skos:Concept ,
+                       utt:Meetmethode ;
+              skos:definition "Fysieke lintmaat of duimstok."@nl ,
+                              "Physical tape measure or folding rule."@en ;
+              skos:inScheme uttvoc:MeetmethodeScheme ;
+              skos:prefLabel "handmatige meting"@nl ,
+                             "manual measurement"@en .
+
+###  uttvoc:lidar
+uttvoc:lidar rdf:type owl:NamedIndividual ,
+                   skos:Concept ,
+                   utt:Meetmethode ;
+          skos:definition "Terrestrische of mobiele laserscanning."@nl ,
+                          "Terrestrial or mobile laser scanning."@en ;
+          skos:inScheme uttvoc:MeetmethodeScheme ;
+          skos:prefLabel "LiDAR scan"@nl ,
+                         "LiDAR scanning"@en ;
+          skos:closeMatch <http://vocab.getty.edu/aat/300417344> .
+
+###  uttvoc:totaalstation
+uttvoc:totaalstation rdf:type owl:NamedIndividual ,
+                           skos:Concept ,
+                           utt:Meetmethode ;
+                  skos:definition "Elektronisch landmeetkundig instrument."@nl ,
+                                  "Electronic surveying instrument."@en ;
+                  skos:inScheme uttvoc:MeetmethodeScheme ;
+                  skos:prefLabel "totaalstation"@nl ,
+                                 "total station"@en .
+
+#    Individuals - Trench Purpose
+#################################################################
+
+###  uttvoc:klicVerificatie
+uttvoc:klicVerificatie rdf:type owl:NamedIndividual ,
+                             skos:Concept ,
+                             utt:SleufDoel ;
+                    skos:definition "Proefsleuf gegraven om KLIC gegevens te verifiëren."@nl ,
+                                    "Trench excavated to verify KLIC registration data."@en ;
+                    skos:inScheme uttvoc:SleufDoelScheme ;
+                    skos:prefLabel "KLIC verificatie"@nl ,
+                                   "KLIC verification"@en .
+
+###  uttvoc:nieuweAanleg
+uttvoc:nieuweAanleg rdf:type owl:NamedIndividual ,
+                          skos:Concept ,
+                          utt:SleufDoel ;
+                 skos:definition "Proefsleuf ter voorbereiding op nieuwe aanleg."@nl ,
+                                 "Trench in preparation for new installation."@en ;
+                 skos:inScheme uttvoc:SleufDoelScheme ;
+                 skos:prefLabel "nieuwe aanleg"@nl ,
+                                "new installation"@en .
+
+###  uttvoc:onderhoud
+uttvoc:onderhoud rdf:type owl:NamedIndividual ,
+                       skos:Concept ,
+                       utt:SleufDoel ;
+              skos:definition "Proefsleuf voor onderhoudswerkzaamheden."@nl ,
+                              "Trench for maintenance work."@en ;
+              skos:inScheme uttvoc:SleufDoelScheme ;
+              skos:prefLabel "onderhoud"@nl ,
+                             "maintenance"@en .
+
+###  uttvoc:ontwerpOnderzoek
+uttvoc:ontwerpOnderzoek rdf:type owl:NamedIndividual ,
+                              skos:Concept ,
+                              utt:SleufDoel ;
+                     skos:definition "Proefsleuf voor ontwerponderzoek en haalbaarheidsstudie."@nl ,
+                                     "Trench for design investigation and feasibility study."@en ;
+                     skos:inScheme uttvoc:SleufDoelScheme ;
+                     skos:prefLabel "ontwerp onderzoek"@nl ,
+                                    "design investigation"@en .
+
+###  uttvoc:verplaatsing
+uttvoc:verplaatsing rdf:type owl:NamedIndividual ,
+                          skos:Concept ,
+                          utt:SleufDoel ;
+                 skos:definition "Proefsleuf om een bestaande utiliteit te lokaliseren voor verplaatsing."@nl ,
+                                 "Trench to locate an existing utility for relocation."@en ;
+                 skos:inScheme uttvoc:SleufDoelScheme ;
+                 skos:prefLabel "verplaatsing"@nl ,
+                                "relocation"@en .
+
+#    Individuals - Observation Status
+#################################################################
+
+###  uttvoc:verwacht
+uttvoc:verwacht rdf:type owl:NamedIndividual ,
+                      skos:Concept ,
+                      utt:WaarnemingStatus ;
+             skos:definition """De waarneming komt overeen met de KLIC registratie binnen 
+    toegestane tolerantie."""@nl ,
+                             """The observation matches the KLIC registration within allowed 
+    tolerance."""@en ;
+             skos:inScheme uttvoc:WaarnemingStatusScheme ;
+             skos:prefLabel "verwacht"@nl ,
+                            "expected"@en .
+
+###  uttvoc:afwijkend
+uttvoc:afwijkend rdf:type owl:NamedIndividual ,
+                       skos:Concept ,
+                       utt:WaarnemingStatus ;
+              skos:definition """De waarneming wijkt significant af van de KLIC registratie 
+    maar is wel aan een geregistreerd object te koppelen."""@nl ,
+                              """The observation deviates significantly from the KLIC 
+    registration but can still be linked to a registered asset."""@en ;
+              skos:inScheme uttvoc:WaarnemingStatusScheme ;
+              skos:prefLabel "afwijkend"@nl ,
+                             "aberrant"@en .
+
+###  uttvoc:onbekend
+uttvoc:onbekend rdf:type owl:NamedIndividual ,
+                      skos:Concept ,
+                      utt:WaarnemingStatus ;
+             skos:definition """De waarneming kan niet aan een KLIC registratie gekoppeld 
+    worden (niet-geregistreerde utiliteit of weeslijding)."""@nl ,
+                             """The observation cannot be linked to a KLIC registration 
+    (unregistered utility or orphan line)."""@en ;
+             skos:inScheme uttvoc:WaarnemingStatusScheme ;
+             skos:prefLabel "onbekend"@nl ,
+                            "unknown"@en .
+
+###  UTT Ontology v0.2 22-06-2026
