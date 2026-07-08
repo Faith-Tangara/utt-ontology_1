@@ -1,1 +1,1 @@
-# utt-ontology_1
+A domain ontology for capturing, sharing, and reusing verification data from test trench excavations (proefsleuven). It models field observations, their provenance, measured positions, physical characteristics, ground conditions, and supporting evidence. 
